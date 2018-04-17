@@ -9,7 +9,7 @@ output: html_document
 ```{r, echo=FALSE}
 library(knitr)
 setwd('~/Documents/HopkinsDataScience/RepData_PeerAssessment1/')
-opts_chunk$set(fig.path='figure/')
+opts_chunk$set(fig.path='./figure/')
 ``` 
 
 Step 1 is to load the data. This is done with read.table in R. The data (activity)
