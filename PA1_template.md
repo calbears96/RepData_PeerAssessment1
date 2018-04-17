@@ -3,20 +3,14 @@ title: "Reproducable Research Course Project 1"
 author: "Mike G."
 date: "4/16/2018"
 output: html_document
----
-
 ================================================================================
-```{r, echo=FALSE}
-library(knitr)
-setwd('~/Documents/HopkinsDataScience/RepData_PeerAssessment1/')
-opts_chunk$set(fig.path='figure/')
-``` 
 
 Step 1 is to load the data. This is done with read.table in R. The data (activity)
 consists of 3 variables: steps, data, and interval.
 
 ```{r , echo=TRUE}
-activity = read.table('~/Documents/HopkinsDataScience/RepData_PeerAssessment1/activity.csv', sep=',', header=TRUE, stringsAsFactors = FALSE)
+activity = read.table('./RepData_PeerAssessment1/activity.csv', sep=',', 
+                      header=TRUE, stringsAsFactors = FALSE)
 
 #convert date to a date format
 activity$date = as.Date(activity$date, format='%Y-%m-%d')
@@ -29,21 +23,19 @@ A histogram is created using ggplot and then the mean and median of totalsteps
 are calculated and displayed.
 
 ```{r, echo=TRUE}
-library(dplyr)
-library(ggplot2)
 #Calculate total number of steps take per day
 #do this with dplyr group_by and summarize and pipe to ggplot to make histogram
 activity = activity %>% group_by(date) %>% mutate(totalsteps = sum(steps, na.rm=TRUE))
-
+```
 ```{r firsthistogram}
 ggplot(activity, aes(x=totalsteps)) + geom_histogram(bins=20) + 
   xlab('Total steps per day') + ylab('Frequency')
+plot(firsthistogram)
 ```
-
 ```{r}
 #calculate mean and median of total steps per day and reprot them
-meansteps_na = round(mean(activity$totalsteps, na.rm=TRUE),3)
-mediansteps_na = round(median(activity$totalsteps, na.rm=TRUE),3)
+meansteps_na = mean(activity$totalsteps, na.rm=TRUE)
+mediansteps_na = median(activity$totalsteps, na.rm=TRUE)
 ```
 The mean total steps is `r meansteps_na`.
 The median total steps is `r mediansteps_na`.
@@ -56,10 +48,12 @@ of steps taken, averaged across all days
 activity_byinterval = activity %>% group_by(interval) %>% mutate(meansteps
                                                       = mean(steps, na.rm=TRUE))
 ```
-```{r stepslinegraph}
+
+```{r stepslinegraph, fig.height=4}
 activity_byinterval %>% ggplot(aes(x=interval, y=meansteps)) + geom_line() +
   xlab('5-minute interval') + ylab('Mean number of steps')
 ```
+
 ```{r}
 rows = which(activity_byinterval$meansteps== max(activity_byinterval$meansteps))
 maxinterval = activity_byinterval[rows[1],3]
@@ -88,22 +82,20 @@ activ_med_missing$steps[is.na(activ_med_missing$steps)] =
 
 activity_nona = activ_med_missing[,-c(4,5)]
 activity_nona = activity_nona %>% group_by(date) %>% mutate(totalsteps = sum(steps, na.rm=TRUE))
-```
 
-```{r nona_histogram}
 #make histogram for new no na dataset
 activity_nona %>% group_by(date) %>% ggplot(aes(x=totalsteps)) + geom_histogram()
 
 #report mean and median total steps per day
-mean_nona = round(mean(activity_nona$totalsteps),3)
-median_nona = round(median(activity_nona$totalsteps),2)
+mean_nona = mean(activity_nona$totalsteps)
+median_nona = median(activity_nona$totalsteps)
 
 mean_nona
 median_nona
 ```
 
 This shows that the mean number of steps taken per day is greater than that of 
-the data with the missing values (`r meansteps_na`, `r mean_nona`). However, the median is the same (`r mediansteps_na`, `r median_nona`).
+the data with the missing values. However, the median is the same.
 
 The final step in this project is to see if there are differences in activity
 patterns between weekdays and weekends. First, create a variable 'weekday' that
@@ -131,11 +123,13 @@ activity_nona$weekday = as.factor(activity_nona$weekday)
 #panel plot of 5-minute interval and average number of steps across weekdays or weekends
 activity_nona_byinterval = activity_nona %>% group_by(interval, weekday) %>% 
   mutate(meansteps = mean(steps))
-```
+```  
 
-```{r weekday_weekend}
+```{r weekdayplot}
 activity_nona_byinterval %>% ggplot(aes(x=interval, y=meansteps)) + geom_line() +
-  facet_wrap( ~ weekday, nrow=2, ncol=1) + ylab('Mean number of steps') + xlab('5-minute interval')
+  facet_grid(weekday ~ .) + ylab('Mean number of steps') + xlab('5-minute interval')
+
+plot(weekdayplot)
 ```
 
 There is a definite differnce in activity between weekdays and weekends. For 
