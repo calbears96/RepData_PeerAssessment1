@@ -6,7 +6,7 @@ output: html_document
 ---
 
 ================================================================================
-```{r, echo=FALSE}
+```{r, include=FALSE}
 library(knitr)
 setwd('~/Documents/HopkinsDataScience/RepData_PeerAssessment1/')
 opts_chunk$set(fig.path='./figure/')
