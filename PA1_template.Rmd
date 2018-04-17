@@ -35,7 +35,7 @@ library(ggplot2)
 #do this with dplyr group_by and summarize and pipe to ggplot to make histogram
 activity = activity %>% group_by(date) %>% mutate(totalsteps = sum(steps, na.rm=TRUE))
 
-```{r firsthistogram}
+```{r histogram1}
 ggplot(activity, aes(x=totalsteps)) + geom_histogram(bins=20) + 
   xlab('Total steps per day') + ylab('Frequency')
 ```
